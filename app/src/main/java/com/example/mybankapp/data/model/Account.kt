@@ -1,7 +1,5 @@
 package com.example.mybankapp.data.model
 
-import android.icu.util.Currency
-
 data class Account(
     val id: String? = null,
     val name: String? = null,

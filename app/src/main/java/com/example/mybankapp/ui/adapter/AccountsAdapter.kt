@@ -2,11 +2,8 @@ package com.example.mybankapp.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Switch
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mybankapp.data.model.Account
-import com.example.mybankapp.databinding.ActivityMainBinding
 import com.example.mybankapp.databinding.ItemAccountBinding
 
 class AccountsAdapter(
@@ -26,12 +23,12 @@ class AccountsAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): AccountsAdapter.AccountViewHolder {
+    ): AccountViewHolder {
         val binding = ItemAccountBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return AccountViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: AccountsAdapter.AccountViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: AccountViewHolder, position: Int) {
         holder.bind(items[position])
     }
 

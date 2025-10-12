@@ -2,14 +2,9 @@ package com.example.mybankapp.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.widget.LinearLayout
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.mybankapp.R
 import com.example.mybankapp.data.model.Account
 import com.example.mybankapp.databinding.ActivityMainBinding
 import com.example.mybankapp.databinding.DialogAddBinding
