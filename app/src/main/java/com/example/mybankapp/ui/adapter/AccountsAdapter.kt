@@ -2,12 +2,18 @@ package com.example.mybankapp.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Switch
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mybankapp.data.model.Account
 import com.example.mybankapp.databinding.ActivityMainBinding
 import com.example.mybankapp.databinding.ItemAccountBinding
 
-class AccountsAdapter : RecyclerView.Adapter<AccountsAdapter.AccountViewHolder>() {
+class AccountsAdapter(
+    val onEdit: (Account) -> Unit,
+    val onSwitchToggle: (String, Boolean) -> Unit,
+    val onDelete: (String) -> Unit
+) : RecyclerView.Adapter<AccountsAdapter.AccountViewHolder>() {
 
     private val items = mutableListOf<Account>()
 
@@ -40,6 +46,21 @@ class AccountsAdapter : RecyclerView.Adapter<AccountsAdapter.AccountViewHolder>(
             tvName.text = account.name
             val text = "${account.balance} ${account.currency}"
             tvBalance.text = text
+
+            btnEdit.setOnClickListener {
+                onEdit(account)
+            }
+            btnDelete.setOnClickListener {
+                account.id?.let {
+                    onDelete(it)
+                }
+            }
+            switcher.isChecked = account.isActive == true
+            switcher.setOnCheckedChangeListener { _, isChecked ->
+                account.id?.let{
+                    onSwitchToggle(it, isChecked)
+                }
+            }
         }
     }
 

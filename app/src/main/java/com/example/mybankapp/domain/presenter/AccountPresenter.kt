@@ -1,6 +1,7 @@
 package com.example.mybankapp.domain.presenter
 
 import com.example.mybankapp.data.model.Account
+import com.example.mybankapp.data.model.AccountState
 import com.example.mybankapp.data.network.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -19,6 +20,41 @@ class AccountPresenter(private val view: AccountContracts.View): AccountContract
 
     override fun addAccount(account: Account) {
         ApiClient.accountsApi.addAccount(account).enqueue(object : Callback<Unit>{
+            override fun onResponse(call: Call<Unit?>, response: Response<Unit?>) {
+                if(response.isSuccessful) loadAccounts()
+            }
+
+            override fun onFailure(call: Call<Unit?>, t: Throwable) {
+            }
+        })
+    }
+
+    override fun updateAccountFully(updatedAccount: Account) {
+        updatedAccount.id?.let {
+            ApiClient.accountsApi.updateAccountFully(it, updatedAccount).enqueue(object : Callback<Unit>{
+                override fun onResponse(call: Call<Unit?>, response: Response<Unit?>) {
+                    if(response.isSuccessful) loadAccounts()
+                }
+
+                override fun onFailure(call: Call<Unit?>, t: Throwable) {
+                }
+            })
+        }
+    }
+
+    override fun updateAccountPartially(id: String, isChecked: Boolean) {
+        ApiClient.accountsApi.updateAccountPartially(id, AccountState(isChecked)).enqueue(object : Callback<Unit>{
+            override fun onResponse(call: Call<Unit?>, response: Response<Unit?>) {
+                if(response.isSuccessful) loadAccounts()
+            }
+
+            override fun onFailure(call: Call<Unit?>, t: Throwable) {
+            }
+        })
+    }
+
+    override fun deleteAccount(id: String) {
+        ApiClient.accountsApi.deleteAccount(id).enqueue(object : Callback<Unit>{
             override fun onResponse(call: Call<Unit?>, response: Response<Unit?>) {
                 if(response.isSuccessful) loadAccounts()
             }
