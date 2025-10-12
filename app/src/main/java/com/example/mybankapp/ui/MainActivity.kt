@@ -1,8 +1,10 @@
 package com.example.mybankapp.ui
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -10,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mybankapp.R
 import com.example.mybankapp.data.model.Account
 import com.example.mybankapp.databinding.ActivityMainBinding
+import com.example.mybankapp.databinding.DialogAddBinding
 import com.example.mybankapp.domain.presenter.AccountContracts
 import com.example.mybankapp.domain.presenter.AccountPresenter
 import com.example.mybankapp.ui.adapter.AccountsAdapter
@@ -27,6 +30,27 @@ class MainActivity : AppCompatActivity(), AccountContracts.View {
         setContentView(binding.root)
         initAdapter()
         presenter = AccountPresenter(this)
+
+        binding.btnAdd.setOnClickListener {
+            showDialog()
+        }
+    }
+
+    private fun showDialog(){
+        val binding = DialogAddBinding.inflate(LayoutInflater.from(this))
+        with(binding){
+            AlertDialog.Builder(this@MainActivity)
+                .setTitle("Добавление нового счета")
+                .setView(binding.root)
+                .setPositiveButton("Добавить"){ _,_ ->
+                    val account = Account (
+                        name = etName.text.toString(),
+                        balance = etBalance.text.toString().toInt(),
+                        currency = etCurrency.text.toString()
+                    )
+                    presenter.addAccount(account)
+                }.show()
+        }
     }
 
     override fun onResume() {

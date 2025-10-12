@@ -1,25 +1,30 @@
 package com.example.mybankapp.domain.presenter
 
 import com.example.mybankapp.data.model.Account
+import com.example.mybankapp.data.network.ApiClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-class AccountPresenter(private val view: AccountContracts.View): _root_ide_package_.com.example.mybankapp.domain.presenter.AccountContracts.Presenter {
+class AccountPresenter(private val view: AccountContracts.View): AccountContracts.Presenter {
     override fun loadAccounts() {
-        val testMockList = arrayListOf<Account>()
-        testMockList.add(Account(
-            name = "o!Bank",
-            balance = 1000,
-            currency = "KGS"
-        ))
-        testMockList.add(Account(
-            name = "mBank",
-            balance = 100,
-            currency = "USD"
-        ))
-        testMockList.add(Account(
-            name = "Optima",
-            balance = 10,
-            currency = "EUR"
-        ))
-        view.showAccounts(testMockList)
+        ApiClient.accountsApi.getAccounts().enqueue(object : Callback<List<Account>>{
+            override fun onResponse(call: Call<List<Account>?>, response: Response<List<Account>?>) {
+                if (response.isSuccessful) view.showAccounts(response.body() ?: emptyList())
+            }
+
+            override fun onFailure(call: Call<List<Account>?>, t: Throwable) {}
+        })
+    }
+
+    override fun addAccount(account: Account) {
+        ApiClient.accountsApi.addAccount(account).enqueue(object : Callback<Unit>{
+            override fun onResponse(call: Call<Unit?>, response: Response<Unit?>) {
+                if(response.isSuccessful) loadAccounts()
+            }
+
+            override fun onFailure(call: Call<Unit?>, t: Throwable) {
+            }
+        })
     }
 }
