@@ -31,8 +31,9 @@ interface AccountsApi {
         @Body accountState: AccountState
     ): Call<Unit>
 
+
     @DELETE("accounts/{id}")
     fun deleteAccount(
-       @Path("id") id: String
+        @Path("id") id: String
     ): Call<Unit>
 }

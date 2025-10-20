@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mybankapp.data.model.Account
 import com.example.mybankapp.databinding.ItemAccountBinding
 
+
 class AccountsAdapter(
     val onEdit: (Account) -> Unit,
     val onSwitchToggle: (String, Boolean) -> Unit,
@@ -60,6 +61,4 @@ class AccountsAdapter(
             }
         }
     }
-
-
 }
