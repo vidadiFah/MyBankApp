@@ -1,10 +1,10 @@
-package com.example.mybankapp.ui.viewModel
+package com.example.mybankapp.di
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mybankapp.data.model.Account
-import com.example.mybankapp.data.model.AccountState
+import com.example.mybankapp.data.network.AccountDetailsApi
 import com.example.mybankapp.data.network.AccountsApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
@@ -13,37 +13,39 @@ import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class AccountViewModel @Inject constructor(
-    private val accountsApi: AccountsApi
+class AccountDetailsViewModel @Inject constructor(
+    private val accountDetailsApi: AccountDetailsApi
 ) : ViewModel() {
-
-    private val _accounts = MutableLiveData<List<Account>>()
-    var accounts: LiveData<List<Account>> = _accounts
+    private val _account = MutableLiveData<Account>()
+    var account: LiveData<Account> = _account
 
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
-    fun loadAccounts() {
-        accountsApi.getAccounts().handleAccountResponse(
-            onSuccess = { _accounts.value = it },
+    fun getAccountByID(id : String) {
+        accountDetailsApi.getAccountByID(id).handleAccountResponse(
+            onSuccess = { _account.value = it },
             onError = { _error.value = it }
         )
     }
 
-    fun addAccount(account: Account) {
-        accountsApi.addAccount(account).handleAccountResponse(
-            onError = { _error.value = it }
-        )
+    fun updateAccountFully(updatedAccount: Account) {
+        updatedAccount.id?.let { id ->
+            accountDetailsApi.updateAccountFully(id, updatedAccount).handleAccountResponse(
+                onSuccess = { getAccountByID(id)},
+                onError = { _error.value = it }
+            )
+        }
     }
 
-    fun updateAccountPartially(id: String, isChecked: Boolean) {
-        accountsApi.updateAccountPartially(id, AccountState(isChecked)).handleAccountResponse(
+    fun deleteAccount(id: String) {
+        accountDetailsApi.deleteAccount(id).handleAccountResponse(
             onError = { _error.value = it }
         )
     }
 
     private fun <T> Call<T>.handleAccountResponse(
-        onSuccess: (T) -> Unit = { loadAccounts() },
+        onSuccess: (T) -> Unit = {},
         onError: (String) -> Unit = {}
     ) {
         this.enqueue(object : Callback<T> {

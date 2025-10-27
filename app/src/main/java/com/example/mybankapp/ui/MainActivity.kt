@@ -1,5 +1,6 @@
 package com.example.mybankapp.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -50,14 +51,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun initAdapter() = with(binding) {
         adapter = AccountsAdapter(
-            onEdit = {
-                showEditDialog(it)
-            },
             onSwitchToggle = { id, isChecked ->
                 viewModel.updateAccountPartially(id, isChecked)
             },
-            onDelete = {
-                showDeleteDialog(it)
+            onClick = { id ->
+                val intent = Intent(this@MainActivity, AccountDetailsActivity::class.java)
+                intent.putExtra("account_id", id)
+                startActivity(intent)
             }
         )
         recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
@@ -78,41 +78,6 @@ class MainActivity : AppCompatActivity() {
                     )
                     viewModel.addAccount(account)
                 }.show()
-        }
-    }
-
-    private fun showDeleteDialog(id: String){
-        AlertDialog.Builder(this)
-            .setTitle("Вы уверены?")
-            .setMessage("Удалить счет с индексом - $id?")
-            .setPositiveButton("Удалить") { _, _ ->
-                viewModel.deleteAccount(id)
-            }
-            .setNegativeButton("Отмена") {_,_ ->}.show()
-    }
-
-    private fun showEditDialog(account: Account){
-        val binding = DialogAddBinding.inflate(LayoutInflater.from(this))
-        with(binding){
-            account.run {
-                etName.setText(name)
-                etBalance.setText(balance.toString())
-                etCurrency.setText(currency)
-
-                AlertDialog.Builder(this@MainActivity)
-                    .setTitle("Изменение счета")
-                    .setView(binding.root)
-                    .setPositiveButton("Изменить"){ _,_ ->
-
-                        val updatedAccount = account.copy (
-                            name = etName.text.toString(),
-                            balance = etBalance.text.toString().toInt(),
-                            currency = etCurrency.text.toString()
-                        )
-
-                        viewModel.updateAccountFully(updatedAccount)
-                    }.show()
-            }
         }
     }
 }
