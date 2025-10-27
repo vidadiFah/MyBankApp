@@ -15,41 +15,52 @@ import javax.inject.Inject
 @HiltViewModel
 class AccountViewModel @Inject constructor(
     private val accountsApi: AccountsApi
-): ViewModel() {
+) : ViewModel() {
 
     private val _accounts = MutableLiveData<List<Account>>()
     var accounts: LiveData<List<Account>> = _accounts
+
+    private val _error = MutableLiveData<String>()
+    val error: LiveData<String> = _error
+
     fun loadAccounts() {
         accountsApi.getAccounts().handleAccountResponse(
-            onSuccess = {
-                 _accounts.value = it
-            }
+            onSuccess = { _accounts.value = it },
+            onError = { _error.value = it }
         )
     }
 
     fun addAccount(account: Account) {
-        accountsApi.addAccount(account).handleAccountResponse()
+        accountsApi.addAccount(account).handleAccountResponse(
+            onError = { _error.value = it }
+        )
     }
 
     fun updateAccountFully(updatedAccount: Account) {
         updatedAccount.id?.let {
-            accountsApi.updateAccountFully(it, updatedAccount).handleAccountResponse()
+            accountsApi.updateAccountFully(it, updatedAccount).handleAccountResponse(
+                onError = { _error.value = it }
+            )
         }
     }
 
     fun updateAccountPartially(id: String, isChecked: Boolean) {
-        accountsApi.updateAccountPartially(id, AccountState(isChecked)).handleAccountResponse()
+        accountsApi.updateAccountPartially(id, AccountState(isChecked)).handleAccountResponse(
+            onError = { _error.value = it }
+        )
     }
 
     fun deleteAccount(id: String) {
-         accountsApi.deleteAccount(id).handleAccountResponse()
+        accountsApi.deleteAccount(id).handleAccountResponse(
+            onError = { _error.value = it }
+        )
     }
 
-    private fun <T>Call<T>.handleAccountResponse(
-        onSuccess: (T) -> Unit = {loadAccounts()},
+    private fun <T> Call<T>.handleAccountResponse(
+        onSuccess: (T) -> Unit = { loadAccounts() },
         onError: (String) -> Unit = {}
     ) {
-        this.enqueue( object: Callback<T> {
+        this.enqueue(object : Callback<T> {
             override fun onResponse(call: Call<T?>, response: Response<T?>) {
                 val result = response.body()
                 if (result != null && response.isSuccessful) {
@@ -58,6 +69,7 @@ class AccountViewModel @Inject constructor(
                     onError(response.code().toString())
                 }
             }
+
             override fun onFailure(call: Call<T?>, t: Throwable) {
                 onError(t.message.toString())
             }

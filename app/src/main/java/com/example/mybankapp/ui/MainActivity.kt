@@ -2,6 +2,7 @@ package com.example.mybankapp.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -34,6 +35,10 @@ class MainActivity : AppCompatActivity() {
     private fun subscribeToLiveData(){
         viewModel.accounts.observe(this) {
             adapter.submitList(it)
+        }
+
+        viewModel.error.observe(this) { errorMessage ->
+            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
         }
     }
 
