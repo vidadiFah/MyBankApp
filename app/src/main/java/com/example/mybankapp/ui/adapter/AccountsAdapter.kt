@@ -8,9 +8,8 @@ import com.example.mybankapp.databinding.ItemAccountBinding
 
 
 class AccountsAdapter(
-    val onEdit: (Account) -> Unit,
     val onSwitchToggle: (String, Boolean) -> Unit,
-    val onDelete: (String) -> Unit
+    val onClick: (String) -> Unit
 ) : RecyclerView.Adapter<AccountsAdapter.AccountViewHolder>() {
 
     private val items = mutableListOf<Account>()
@@ -45,18 +44,16 @@ class AccountsAdapter(
             val text = "${account.balance} ${account.currency}"
             tvBalance.text = text
 
-            btnEdit.setOnClickListener {
-                onEdit(account)
-            }
-            btnDelete.setOnClickListener {
-                account.id?.let {
-                    onDelete(it)
-                }
-            }
             switcher.isChecked = account.isActive == true
             switcher.setOnCheckedChangeListener { _, isChecked ->
                 account.id?.let{
                     onSwitchToggle(it, isChecked)
+                }
+            }
+
+            itemView.setOnClickListener {
+                account.id?.let {
+                    onClick(it)
                 }
             }
         }
